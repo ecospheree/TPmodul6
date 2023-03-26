@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 public class SayaTubeVideo
 {
@@ -8,17 +9,29 @@ public class SayaTubeVideo
     string title;
     int playCount;
 
-    public SayaTubeVideo(String t)
+    public SayaTubeVideo(string t)
     {
         this.title = t;
-        Random x = new Random();
-        id = x.Next(10000,99999);
+        Random Rx = new Random();
+        id = Rx.Next(10000,99999);
         this.playCount = 0;
+        Debug.Assert(t.Length < 100 && t != null);
     }
 
     public void IncreasePlayCount(int pc)
     {
-        this.playCount += pc;
+        Debug.Assert(pc < 10000000);
+        try
+        {
+            checked 
+            { 
+                this.playCount += pc; 
+            }
+        }
+        catch(OverflowException error)
+        {
+            Console.WriteLine(error.Message);
+        }
             
     }
 
@@ -32,7 +45,10 @@ public class SayaTubeVideo
     public static void Main(string[] args)
     {
         SayaTubeVideo video = new SayaTubeVideo("Tutorial Design By Contract - Nabiel");
-        video.IncreasePlayCount(11);
+        for (int i = 0; i < 1000; i++) 
+        { 
+            video.IncreasePlayCount(69);
+        }
         video.PrintVideoDetails();
     }
 }
